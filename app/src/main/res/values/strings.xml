@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TorchVista</string>
+    <string name="toggle_torch">Toggle Torch</string>
+</resources>
