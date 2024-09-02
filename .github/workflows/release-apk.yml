@@ -2,7 +2,7 @@ name: Release APK
 
 on:
   release:
-    types: [created]  # Triggers on new release creation
+    types: [created]
 
 jobs:
   build:
@@ -15,17 +15,17 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '17'       # Updated to Java 17
-          distribution: 'temurin'  # Specify JDK distribution
+          java-version: '17'  # Update to Java 17
+          distribution: 'temurin'
 
       - name: Grant execute permission for gradlew
-        run: chmod +x ./gradlew  # Adds execute permissions to gradlew
+        run: chmod +x ./gradlew
 
       - name: Build APK
-        run: ./gradlew assembleRelease  # Command to build your APK
+        run: ./gradlew assembleRelease
 
       - name: List Build Artifacts
-        run: ls -R app/build/outputs/apk/release/  # List the contents of the directory to verify the APK path
+        run: ls -R app/build/outputs/apk/release/
 
       - name: Zip APK
         run: |
@@ -39,9 +39,13 @@ jobs:
       - name: Upload ZIP to Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: TorchVista.zip  # Name of the ZIP file to upload
+          artifacts: TorchVista.zip
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      # Optional: Notify on failure (example with Slack)
       - name: Notify Failure
-        if: failure()  # Only run this step if the previous steps fail
-        run: echo "Build failed!" | mail -s "CI/CD Pipeline Failure" your-email@example.com
+        if: failure()
+        uses: slackapi/slack-github-action@v1
+        with:
+          slack-message: 'Build failed! Check the details at ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+          slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
