@@ -15,17 +15,17 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '17'  # Update to Java 17
+          java-version: '17'
           distribution: 'temurin'
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
       - name: Build APK
-        run: ./gradlew assembleDebug  # Update to build debug APK
+        run: ./gradlew assembleDebug
 
       - name: List Build Artifacts
-        run: ls -R app/build/outputs/apk/debug/  # Update to list debug directory
+        run: ls -R app/build/outputs/apk/debug/
 
       - name: Zip APK
         run: |
@@ -40,9 +40,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: TorchVista.zip
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Use PAT if necessary
 
-      # Optional: Notify on failure (example with Slack)
       - name: Notify Failure
         if: failure()
         uses: slackapi/slack-github-action@v1
