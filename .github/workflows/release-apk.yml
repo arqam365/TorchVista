@@ -2,7 +2,7 @@ name: Release APK
 
 on:
   release:
-    types: [created]  # Triggers the workflow on new release creation
+    types: [created]  # Triggers on new release creation
 
 jobs:
   build:
@@ -15,7 +15,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '11'  # Set to the Java version your project needs
+          java-version: '11'       # Set Java version
+          distribution: 'temurin'  # Specify JDK distribution
 
       - name: Build APK
         run: ./gradlew assembleRelease  # Command to build your APK
