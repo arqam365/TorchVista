@@ -1,0 +1,30 @@
+name: Release APK
+
+on:
+  release:
+    types: [created]  # Triggers the workflow on new release creation
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'  # Set to the Java version your project needs
+
+      - name: Build APK
+        run: ./gradlew assembleRelease  # Command to build your APK
+
+      - name: Zip APK
+        run: zip -r TorchVista.zip app/build/outputs/apk/release/app-release.apk  # Adjust path if necessary
+
+      - name: Upload ZIP to Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: TorchVista.zip  # Name of the ZIP file to upload
+          token: ${{ secrets.GITHUB_TOKEN }}
