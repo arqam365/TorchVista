@@ -15,8 +15,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
-          java-version: '11'       # Set Java version
-          distribution: 'temurin'  # Specify JDK distribution
+          java-version: '17'       # Updated to Java 17
+          distribution: 'temurin'  # Specify JDK distribution (e.g., temurin)
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew  # Adds execute permissions to gradlew
