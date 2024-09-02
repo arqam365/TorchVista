@@ -1,0 +1,47 @@
+name: Release APK
+
+on:
+  release:
+    types: [created]  # Triggers on new release creation
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'       # Updated to Java 17
+          distribution: 'temurin'  # Specify JDK distribution
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./gradlew  # Adds execute permissions to gradlew
+
+      - name: Build APK
+        run: ./gradlew assembleRelease  # Command to build your APK
+
+      - name: List Build Artifacts
+        run: ls -R app/build/outputs/apk/release/  # List the contents of the directory to verify the APK path
+
+      - name: Zip APK
+        run: |
+          if [ -f app/build/outputs/apk/release/app-release.apk ]; then
+            zip -r TorchVista.zip app/build/outputs/apk/release/app-release.apk
+          else
+            echo "APK file not found!" >&2
+            exit 1
+          fi
+
+      - name: Upload ZIP to Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: TorchVista.zip  # Name of the ZIP file to upload
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify Failure
+        if: failure()  # Only run this step if the previous steps fail
+        run: echo "Build failed!" | mail -s "CI/CD Pipeline Failure" your-email@example.com
