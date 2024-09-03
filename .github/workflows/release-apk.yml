@@ -36,22 +36,26 @@ jobs:
             exit 1
           fi
 
-      - name: Check for Existing Release
-        id: check-release
+      - name: Verify ZIP file creation
         run: |
-          TAG_NAME="${{ github.event.release.tag_name }}"
-          echo "Checking if release with tag ${TAG_NAME} exists..."
-          RELEASE_EXISTS=$(curl -s -H "Authorization: token ${{ secrets.PERSONAL_ACCESS_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/tags/${TAG_NAME}" | jq '.message == "Not Found"')
-          echo "::set-output name=exists::$RELEASE_EXISTS"
+          if [ -f TorchVista.zip ]; then
+            echo "ZIP file found: TorchVista.zip"
+          else
+            echo "ZIP file not found!"
+            exit 1
+          fi
 
       - name: Upload ZIP to Release
-        if: steps.check-release.outputs.exists == 'true'
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@v1.9.0 # Updated action version
         with:
           artifacts: TorchVista.zip
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           tag: ${{ github.event.release.tag_name }}
+          releaseName: "Release ${{ github.event.release.tag_name }}"
+          body: "Automated release of TorchVista APK"
+          draft: false
+          prerelease: false
+          replacesArtifacts: true  # Ensure artifacts are replaced if they already exist
 
       - name: Notify Failure
         if: failure()
