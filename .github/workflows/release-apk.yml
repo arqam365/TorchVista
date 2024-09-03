@@ -36,30 +36,18 @@ jobs:
             exit 1
           fi
 
-      - name: Verify ZIP file creation
-        run: |
-          if [ -f TorchVista.zip ]; then
-            echo "ZIP file found: TorchVista.zip"
-          else
-            echo "ZIP file not found!"
-            exit 1
-          fi
+      - name: Create a Unique Tag
+        id: tag
+        run: echo "TAG_NAME=v1.3.0-${{ github.run_number }}" >> $GITHUB_ENV  # Adjust for your versioning needs
 
       - name: Upload ZIP to Release
-        uses: ncipollo/release-action@v1.9.0 # Updated action version
+        uses: ncipollo/release-action@v1.9.0
         with:
           artifacts: TorchVista.zip
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          tag: ${{ github.event.release.tag_name }}
-          releaseName: "Release ${{ github.event.release.tag_name }}"
+          tag: ${{ env.TAG_NAME }}  # Use the dynamically created tag
           body: "Automated release of TorchVista APK"
           draft: false
           prerelease: false
-          replacesArtifacts: true  # Ensure artifacts are replaced if they already exist
-
-      - name: Notify Failure
-        if: failure()
-        uses: slackapi/slack-github-action@v1
-        with:
-          slack-message: 'Build failed! Check the details at ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}'
-          slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
+          replacesArtifacts: true
+          allowUpdates: true  # This will allow updating the release if needed
