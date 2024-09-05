@@ -1,8 +1,9 @@
 name: Release APK
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v*.*.*'
 
 jobs:
   build:
@@ -38,16 +39,16 @@ jobs:
 
       - name: Create a Unique Tag
         id: tag
-        run: echo "TAG_NAME=v1.3.0-${{ github.run_number }}" >> $GITHUB_ENV  # Adjust for your versioning needs
+        run: echo "TAG_NAME=v1.3.0-${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Upload ZIP to Release
         uses: ncipollo/release-action@v1.9.0
         with:
           artifacts: TorchVista.zip
           token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-          tag: ${{ env.TAG_NAME }}  # Use the dynamically created tag
+          tag: ${{ env.TAG_NAME }}
           body: "Automated release of TorchVista APK"
           draft: false
           prerelease: false
           replacesArtifacts: true
-          allowUpdates: true  # This will allow updating the release if needed
+          allowUpdates: true
